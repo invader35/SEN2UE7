@@ -1,0 +1,170 @@
+\documentclass[a4paper,oneside,openany]{tufte-book}
+\usepackage[utf8x]{inputenc}
+\usepackage[german]{babel}
+\usepackage{microtype} % Improves character and word spacing
+\usepackage{booktabs} % Better horizontal rules in tables
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{upgreek}
+
+\makeatletter% since we're using commands with @ in their name
+
+\let\origappendix\appendix% save a copy of the original meaning of \appendix
+\renewcommand{\appendix}{%
+  \origappendix% do all the original \appendix stuff
+  \titlecontents{chapter}%
+    [0em] % distance from left margin
+    {\vspace{1.5\baselineskip}\begin{fullwidth}\LARGE\rmfamily\itshape} % above (global formatting of entry)
+    {\hspace*{0em}\appendixname~\thecontentslabel: } % before w/label (label = ``2'')
+    {\hspace*{0em}} % before w/o label
+    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    [\end{fullwidth}] % after
+  \titleformat{\chapter}%
+    [display]% shape
+    {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+    {\itshape\huge Anhang~\thechapter}% label
+    {0pt}% horizontal separation between label and title body
+    {\huge\rmfamily\itshape}% before the title body
+    [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
+  \setcounter{secnumdepth}{0}% ``number'' the appendices
+  \renewcommand{\thefigure}{\@arabic\c@figure}% define \thefigure to use only the figure number (1), not A.1
+  \renewcommand{\thetable}{\@arabic\c@table}%
+  %
+  % Add any other special appendix-related code here.
+  %
+}
+\makeatother% restore the special meaning of @
+
+\author{Schett Matthias}
+\title{SEN-\"{U}bung 2.7}
+
+\begin{document}
+
+\definecolor{gray}{rgb}{0.9,0.9,0.9} % background color for the listings
+
+\lstset{language=[Visual]Basic, morekeywords={param, local}, breaklines=true, tabsize=4, showstringspaces=false,backgroundcolor=\color{gray}, numbers=left} % standard listing settings
+
+\frontmatter
+
+\maketitle
+\tableofcontents
+\mainmatter
+
+\chapter{Aufgabe 1}
+
+\section{L\"{o}sungsidee}
+
+Es soll die Wetter Stations Verwaltung aus Übung 4 mithilfe der std::list neu implmentiert werden. Daher wird die Wetterstations Klasse unverändert übernommen.
+In der WeatherStations\sidenote{Zuständig für die Verwaltung von Wetterstationen} Klasse werden jedoch einige Veränderungen durchgeführt.
+Es gibt nun zum Beispiel nur mehr eine Membervariable, mWeatherStations vom Type std::list<WeatherStation>.
+Durch die Verwedung von std::list\sidenote{std::list ist die Standardimplementierung einer doppelt verketteten List} ergeben sich auch für die Implementierung einige Unterschiede.
+Weiters gilt es anzumerken, dass durch die Verwendung von std::list der Default Konstruktor, Default Copy Konstruktor, Default Destruktor und Default Assignement Operator 
+verwendet werden kann, da Beispielsweise die Konstruktoren, die jeweiligen Konstruktoren der Membervariablen aufrufen.
+
+\begin{fullwidth} \begin{lstlisting}[caption=Alte Implementierung Add]
+bool WeatherStations::Add(WeatherStation const &ws){
+    if(mNumberOfStations < mMaxNumber){
+        mStationArray[mNumberOfStations] = ws;
+        ++mNumberOfStations;
+        return true;
+    }
+    return false;
+}
+\end{lstlisting} \end{fullwidth}
+
+\begin{fullwidth} \begin{lstlisting}[caption=Neue Implementierung Add]
+void WeatherStations::Add(WeatherStation const &ws){
+    if(mWeatherStations.empty()){
+        mWeatherStations.push_front(ws);
+    } else{
+        // using standard functions just push it to the back then sort and remove duplicates
+        mWeatherStations.remove_if(RemoveWithName(ws));
+        mWeatherStations.push_back(ws);
+        mWeatherStations.sort(sortByName);
+    }
+}
+\end{lstlisting} \end{fullwidth}
+
+Auch die 2 Hilfsmethoden searchForColdest und searchForWarmest wurden neu implementiert
+
+\begin{fullwidth} \begin{lstlisting}[caption=Implementierung der searchForColdest-Methode]
+WeatherStation WeatherStations::searchForColdest() const{
+    if(!mWeatherStations.empty()){
+        std::list<WeatherStation>::const_iterator it = std::min_element(mWeatherStations.begin(), mWeatherStations.end(), findColdest);
+        return *it;
+    } else {
+        throw WeatherException("No stations are defined");
+    }
+}
+\end{lstlisting} \end{fullwidth}
+
+Zu guter Letzt musste auch die PrintAll-Methode angepasst werden:
+
+\begin{fullwidth} \begin{lstlisting}[caption=Implementierung PrintAll]
+void WeatherStations::PrintAll(std::ostream &out) const{
+    if(!mWeatherStations.empty()){
+        for (std::list<WeatherStation>::const_iterator it = mWeatherStations.begin(); it != mWeatherStations.end(); ++it) {
+            it->Print(out);
+        }
+    } else{
+        out << "The list is empty" << std::endl;
+    }
+}
+\end{lstlisting} \end{fullwidth}
+
+Der Code findet sich ab Anhang \nameref{chap:Auf1}.\sidenote{Der Code der WeatherStation Klasse wird da diese nicht verändert wurde nicht mit angehängt.}
+
+\section{Testf\"{a}lle}
+
+Der Testreiber testet die Funktionnalität indem er zuerst ein Objekt erstellt, vier Wetterstationen versucht hinzuzfügen und anschließend sämtliche Methoden aufruft.
+\paragraph{Ausgabe}
+\begin{fullwidth}
+\lstinputlisting[caption=Testfall Ausgabe]{WeatherStationManagerListVersion/OutputA1.txt}
+\end{fullwidth}
+\chapter{Aufgabe 2}
+
+\section{L\"{o}sungsidee}
+
+Es sollen verschiedene STL Algorithmen getestet werden. Dazu wird ein std::vector angeleget, der die in der Aufgabenstellung beschriebene Klasse Element aufnimmt.
+Dieser std::vector wird mittels des Zufallszahlengenerators befüllt. Anschließend wird mittles des Copy Konstruktors eine Kopie erstellt und mittels des std::copy Algorithmus und eines
+std::back\_inserters eine std::list als Kopie erstellt. Diese 3 Container werden unterschiedlich sortiert, das Original mit std::sort, der Kopierte std::vector mit std::stable\_sort und die Liste mit std::list.sort.
+
+Über das Resultat lässt sich sagen, dass std::stable\_sort und std::list.sort beide das gleiche Ergebnis liefern, da beide eine Liste die nach den Zufalsswerten sortiert ist und gleichzeitig nach dem Index liefern.
+Die Begürndung für dieses Verhalten findet sich in der offizielen Dokumentation\sidenote{Sorts the elements in the range (first,last) into ascending order, like sort, but stable\_sort preserves the relative order of the elements with equivalent values.(Quelle: \url{http://www.cplusplus.com/reference/algorithm/stable_sort/} Datum: 18-05-2013)}.
+
+Der letzte Test erfolgt mit equal\_range der einen Bereich mit den gleichen Werte zurückgibt, aus welchem sich dann errechnen lässt, wie oft eine bestimmte Zufallszahl vorkommt.
+Der Code findet sich ab Anhang \nameref{chap:Auf1}.
+
+\section{Testf\"{a}lle}
+\begin{fullwidth}
+\lstinputlisting[caption=Testfall Ausgabe]{OutputA2.txt}
+\end{fullwidth}
+\backmatter
+
+\appendix
+
+\setboolean{@mainmatter}{true}
+\chapter{Aufgabe 1}\label{chap:Auf1}
+\begin{fullwidth}
+\lstinputlisting[caption=Header der Wetterstationsverwaltung]{WeatherStationManagerListVersion/WeatherStations.h}
+\lstinputlisting[caption=Implementierung der Wetterstationsverwaltung]{WeatherStationManagerListVersion/WeatherStations.cpp}
+\lstinputlisting[caption=Testtreiber]{WeatherStationManagerListVersion/Main.cpp}
+\end{fullwidth}
+\chapter{Aufgabe 2}\label{chap:Auf2}
+\begin{fullwidth}
+\lstinputlisting[caption=Header der Elementklasse]{STLTest/Element.h}
+\lstinputlisting[caption=Implementierung der ElementKlasse]{STLTest/Element.cpp}
+\lstinputlisting[caption=Header des STL Tests]{STLTest/StlTest.h}
+\lstinputlisting[caption=Implementierung des STL Tests]{STLTest/StlTest.cpp}
+\lstinputlisting[caption=Testtreiber]{STLTest/Main.cpp}
+\end{fullwidth}
+
+
+\end{document}

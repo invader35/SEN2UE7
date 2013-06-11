@@ -1,0 +1,52 @@
+
+Test with filled vector
+Unsorted values:
+5-0  5-1  3-2  1-3  6-4  2-5  6-6  8-7  2-8  3-9  4-10  7-11  3-12  4-13  8-14  5-15  2-16  4-17  1-18  8-19  0-20  5-21  7-22  4-23  7-24  4-25  7-26  1-27  9-28  9-29  1-30  9-31  8-32  9-33  4-34  8-35  9-36  2-37  7-38  6-39  
+
+Ascending sorted values:
+0-20  1-18  1-3  1-30  1-27  2-37  2-5  2-8  2-16  3-2  3-9  3-12  4-34  4-10  4-13  4-25  4-23  4-17  5-1  5-15  5-0  5-21  6-6  6-4  6-39  7-22  7-24  7-26  7-11  7-38  8-19  8-14  8-7  8-32  8-35  9-28  9-29  9-31  9-33  9-36  
+
+Ascending stable_sorted values:
+0-20  1-3  1-18  1-27  1-30  2-5  2-8  2-16  2-37  3-2  3-9  3-12  4-10  4-13  4-17  4-23  4-25  4-34  5-0  5-1  5-15  5-21  6-4  6-6  6-39  7-11  7-22  7-24  7-26  7-38  8-7  8-14  8-19  8-32  8-35  9-28  9-29  9-31  9-33  9-36  
+
+Ascending list sorted values:
+0-20  1-3  1-18  1-27  1-30  2-5  2-8  2-16  2-37  3-2  3-9  3-12  4-10  4-13  4-17  4-23  4-25  4-34  5-0  5-1  5-15  5-21  6-4  6-6  6-39  7-11  7-22  7-24  7-26  7-38  8-7  8-14  8-19  8-32  8-35  9-28  9-29  9-31  9-33  9-36  
+
+Frequency of random numbers
+random number(0): 1
+random number(1): 4
+random number(2): 4
+random number(3): 3
+random number(4): 6
+random number(5): 4
+random number(6): 3
+random number(7): 5
+random number(8): 5
+random number(9): 5
+random number(10): 0
+
+Test with empty vector
+Unsorted values:
+
+
+Ascending sorted values:
+
+
+Ascending stable_sorted values:
+
+
+Ascending list sorted values:
+
+
+Frequency of random numbers
+random number(0): 0
+random number(1): 0
+random number(2): 0
+random number(3): 0
+random number(4): 0
+random number(5): 0
+random number(6): 0
+random number(7): 0
+random number(8): 0
+random number(9): 0
+random number(10): 0
